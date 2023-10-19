@@ -1,5 +1,7 @@
 import type { IApi } from "umi";
 
+const DIR_NAME = "plugin-dynamicApiRoutes";
+
 export default (api: IApi) => {
   api.logger.info("Use dynamic-api-routes plugin.");
 
