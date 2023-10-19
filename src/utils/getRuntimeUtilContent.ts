@@ -7,10 +7,10 @@ export default () => {
     import { Outlet } from '@umijs/max';
     
     function generateComponentPath(inputPath: string): string {
-      // Başındaki './' kısmını kaldır
+      // 删除开头的"./"。
       let newPath = inputPath.replace('./', '');
     
-      // Sonuna '/index' ekle
+      // 在末尾添加"/index
       newPath = newPath + '/index';
     
       return newPath;
@@ -38,14 +38,14 @@ export default () => {
       routesRaw: DynamicRoutes.RouteRaw[],
       currentRoutes: DynamicRoutes.RouteRaw[],
     ): DynamicRoutes.ParseRoutesReturnType {
-      const routes: DynamicRoutes.ParsedRoutes = {}; // Dönüştürülmüş rota bilgileri
-      const routeComponents: DynamicRoutes.ParsedRouteComponent = {}; // Oluşturulan React.lazy bileşenleri
-      const routeParentMap = new Map<string, number>(); // menü kimliği ile rotalar dizisindeki indeks arasındaki eşleme. Örneğin: 'role_management' -> 7
+      const routes: DynamicRoutes.ParsedRoutes = {}; // 已转换的路由信息
+      const routeComponents: DynamicRoutes.ParsedRouteComponent = {}; // 生成 React.lazy 组件
+      const routeParentMap = new Map<string, number>(); // 菜单 id 与路由数组中的索引之间的映射。例如：'role_management' -> 7
     
-      let currentIndex = findLastRouteIndex(currentRoutes) + 1; // İşlenmekte olan rota öğesinin indeksi. patchRoutes'a gelen rotaları bir dizi olarak düşünebiliriz, burası dizideki öğenin dizini gibidir.
+      let currentIndex = findLastRouteIndex(currentRoutes) + 1; // 我们可以把进入 patchRoutes 的路由看作一个数组，这里就是数组中项的索引。
     
       routesRaw.forEach((route) => {
-        let effectiveRoute = true; // Şu anda işlenmekte olan rota geçerli mi?
+        let effectiveRoute = true; // 当前正在处理的路由是否有效？
     
         const replaceRoute = Object.entries(currentRoutes).find((x) => x[1].key === route.key);
         const tempRoute = { ...route };
@@ -55,42 +55,42 @@ export default () => {
         }
     
         if (replaceRoute) {
-          // Eğer replace rota durumu varsa.
+          // 如果替换路由状态可用。
           const replaceRouteIndex = replaceRoute[0];
           const replaceRouteMap: DynamicRoutes.Route = {
             ...route,
             id: replaceRouteIndex,
           };
-          // Rota bilgisini sakla
+          // 存储路由信息
           routes[parseInt(replaceRouteIndex)] = replaceRouteMap;
         } else {
-          // Eğer bileşen varsa oluştur ve sakla.
+          // 创建并存储已存在的组件。
           if (route.component) {
             const componentPath = generateComponentPath(route.component);
-            // Bileşeni oluştur
+            // 创建组件
             const tempComponent = LazyLoadable(lazy(() => import(\`@/pages/$\{componentPath}\`)));
-            // Bileşeni sakla
+            // 存储组件
             routeComponents[currentIndex] = tempComponent;
-          } // Eğer rotanın kendi sayfası yoksa.
+          } // 如果路由没有自己的页面。
           else {
-            // Rotanın kendi sayfası yoktur, burada alt rotaların sayfalarını göstermek için bir Outlet oluşturulur
+            // 路由没有自己的页面，这里创建了一个 Outlet 来显示子路的页面
             const tempComponent = Outlet;
-            // Outlet'i sakla
+            // temp Outlet.
             routeComponents[currentIndex] = tempComponent;
           }
     
           if (route.parentKeys === undefined || (route.parentKeys && route.parentKeys.length === 0)) {
-            // İşlenmekte olan öğe birinci seviye rota
-            // Rota bilgisi oluştur
+            // 加工项目一级路线
+            // 创建路线信息
             const mainRouteMap: DynamicRoutes.Route = {
               ...tempRoute,
               id: currentIndex.toString(),
               parentId: 'ant-design-pro-layout',
             };
-            // Rota bilgisini sakla
+            // 存储路线信息
             routes[currentIndex] = mainRouteMap;
     
-            // Menü kimliğini ve mevcut öğenin dizinini eşle
+            // 映射菜单 ID 和当前项目的索引
             routeParentMap.set(route.key!, currentIndex);
     
             if (route.routes && route.routes.length > 0) {
@@ -117,10 +117,10 @@ export default () => {
                 }
               }
             }
-          } // Doğrudan görünen (alt rotaları içermeyen) bir rota kaydı mı? Örneğin: /home; /Dashboard
+          } // 直接出现的路由记录（不包括子路由）？ 例如：/home; /Dashboard
           else if (route.parentKeys && route.parentKeys.length > 0) {
-            // Birinci seviye rota değil
-            // Gerçek üst seviye rota kimliğini al
+            // 不是一级路由
+            // 获取实际的顶级路由 ID
     
             const parentKeys = route.parentKeys[0];
     
@@ -138,16 +138,16 @@ export default () => {
                 id: currentIndex.toString(),
                 parentId: (routeParentMapKey || currentRoutesParentKey![0]).toString(),
               };
-              // Rota bilgisini sakla
+              // 存储路由信息
               routes[currentIndex] = routeMap;
             } else {
-              // Üst seviye rota bulunamadı, rota geçersizdir, currentIdx artırılmaz
+              // 未找到顶级路由，路由无效，currentIdx 未递增
               effectiveRoute = false;
             }
           }
     
           if (effectiveRoute) {
-            // Rota geçerliyse, currentIdx'i bir artır
+            // 如果路由有效，则将 currentIdx 增 1
             currentIndex += 1;
           }
         }
