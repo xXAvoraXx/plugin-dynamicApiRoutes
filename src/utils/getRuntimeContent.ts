@@ -1,8 +1,9 @@
 export default () => {
   return `
   import React from 'react';
-  import icons from './icons';
+  import * as allIcons from '@ant-design/icons';
   import { createElement } from "react";
+  import { parseRoutes } from './utils';
   
   function formatIcon(name: string) {
     return name
@@ -13,7 +14,11 @@ export default () => {
   }
   
   export function patchRoutes({ routes, routeComponents }) {
-    const parsedRoutes = parseRoutes(newRoutes, routes);
+
+    // user login control
+    // fetch api route
+
+    //const parsedRoutes = parseRoutes(newRoutes, routes);
 
     Object.assign(routes, parsedRoutes.routes);
     Object.assign(routeComponents, parsedRoutes.routeComponents);
@@ -22,8 +27,8 @@ export default () => {
       const { icon } = routes[key];
       if (icon && typeof icon === 'string') {
         const upperIcon = formatIcon(icon);
-        if (icons[upperIcon] || icons[upperIcon + 'Outlined']) {
-          routes[key].icon = React.createElement(icons[upperIcon] || icons[upperIcon + 'Outlined']);
+        if (allIcons[upperIcon] || allIcons[upperIcon + 'Outlined']) {
+          routes[key].icon = React.createElement(allIcons[upperIcon] || allIcons[upperIcon + 'Outlined']);
         }
       }
     });

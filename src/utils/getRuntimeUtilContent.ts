@@ -1,6 +1,6 @@
 export default () => {
   return `
-    import LazyLoadable from '@/components/LazyLoadable';
+    import LazyLoadable from './LazyLoadable';
     import { isNaN, isNumber } from 'lodash';
     import { lazy } from 'react';
     import type { DynamicRoutes } from './typing';
