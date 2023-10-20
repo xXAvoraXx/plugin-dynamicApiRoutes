@@ -3,7 +3,7 @@ export default (requestUrl: string = "") => {
 import { request } from '@@plugin-request';
 import { DynamicRoutes } from './typing';
   
-export async function getRoutes() {
+export async function getRoutesRequest() {
    const routes = await request('${requestUrl}', {
      method: 'GET',
    });
