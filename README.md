@@ -1,6 +1,6 @@
 # @umijs/plugin-dynamic-api-routes
 
-A umi plugin
+Umi plugin for dynamic creation of routes called from api.
 
 ## Install
 
